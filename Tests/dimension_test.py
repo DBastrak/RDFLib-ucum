@@ -4,9 +4,10 @@ import unittest
 
 
 class TestDimension(unittest.TestCase):
-    baseClass = Dimension()
+
     def init_test(self):
-        self.assertEqual(self.baseClass, Dimension())
+        baseClass = Dimension()
+        self.assertEqual(baseClass, Dimension())
         self.assertRaises(ValueError, Dimension([1,2]))
         self.assertRaises(ValueError, Dimension(-2))
 
