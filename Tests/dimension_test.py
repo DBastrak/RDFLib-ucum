@@ -1,8 +1,9 @@
 from UCUM.dimension import Dimension
+
 import unittest
 
 
-class TestDimension(unittest.Testcase):
+class TestDimension(unittest.TestCase):
     baseClass = Dimension()
     def init_test(self):
         self.assertEqual(self.baseClass, Dimension())
