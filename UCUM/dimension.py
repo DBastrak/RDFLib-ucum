@@ -5,6 +5,8 @@ from UCUM.ucum_config import UCUM
 
 class Dimension:
     dimVec_ = None
+
+
     def __init__(self, dimSetting:(list, int) = None):
         if UCUM['dimLen_'] == 0:
             raise ValueError("Dimension.setDimensionLen must be called before Dimension constructor")
@@ -23,6 +25,7 @@ class Dimension:
             self.assignZero()
             self.dimVec_[dimSetting] = 1
 
+
     def setElementAt(self, indexPos: int, value:int=None):
         if type(indexPos) is not int or indexPos < 0 or indexPos >= UCUM['dimLen_']:
             raise ValueError(f"setElementAt() called with an invalid index position: {indexPos}")
@@ -32,6 +35,7 @@ class Dimension:
             value = 1
         self.dimvec_[indexPos] = value
 
+
     def getElementAt(self, indexPos: int) ->int:
         if type(indexPos) is not int or indexPos < 0 or indexPos >= UCUM['dimLen_']:
             raise ValueError(f"getElementAt() called with an invalid index position: {indexPos}")
@@ -40,15 +44,18 @@ class Dimension:
             ret = self.dimVec_[indexPos]
         return  ret
 
+
     def getProperty(self, propertyName:str) -> str:
         uProp = propertyName if propertyName[-1] == '_' else propertyName + '_'
-        return uProp
+        return eval(f"self.{uProp}")
+
 
     def toString(self) -> str:
         ret = None
         if self.dimVec_:
             ret = '[' + self.dimVec_.join(',') + ']'
         return ret
+
 
     def add(self, dim2):
         if isinstance(not dim2, Dimension):
@@ -58,6 +65,7 @@ class Dimension:
                 self.dimVec_[i] += dim2.dimVec_[i]
         return self
 
+
     def subtract(self, dim2):
         if isinstance(not dim2, Dimension):
             raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
@@ -66,11 +74,13 @@ class Dimension:
                 self.dimVec_[i] -= dim2.dimVec_[i]
         return self
 
+
     def minus(self):
         if self.dimVec_:
             for i in range(UCUM['dimLen_']):
                 self.dimVec_[i] = -self.dimVec_[i]
         return self
+
 
     def mul(self, scalar: int):
         if type(scalar) is not int:
@@ -79,6 +89,7 @@ class Dimension:
             for i in range(UCUM['dimLen_']):
                 self.dimVec_ *= scalar
         return self
+
 
     def equals(self, dim2) -> bool:
         if isinstance(not dim2, Dimension):
@@ -92,6 +103,7 @@ class Dimension:
             isEqual = self.dimVec_ is None and dimVec2 is None
         return isEqual
 
+
     def assignDim(self, dim2):
         if isinstance(not dim2, Dimension):
             raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
@@ -104,12 +116,14 @@ class Dimension:
                 self.dimVec_[i] = dim2.dimVec_[i]
         return self
 
+
     def assignZero(self):
         if self.dimVec_ is None:
             self.dimVec_ = []
         for i in range(UCUM['dimLen_']):
             self.dimVec_.append(0)
         return self
+
 
     def isZero(self) -> bool:
         allZero = self.dimVec_ != None
@@ -118,11 +132,12 @@ class Dimension:
                 allZero = self.dimVec_[i] == 0
         return allZero
 
+
     def isNull(self) -> bool:
         return self.dimVec_ is None
+
 
     def clone(self):
         that = Dimension()
         that.assignDim(self)
         return that
-
