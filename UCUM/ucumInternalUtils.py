@@ -1,10 +1,10 @@
-#from UCUM.unitTables import unitTables
+from UCUM.unitTables import UnitTables
 
 def isNumericString(theString: str) -> bool:
     num = "" + theString
     return num is not None and float(num) is not None
 
-def inIntegerUnit(theString: str) -> bool :
+def isIntegerUnit(theString: str) -> bool :
     try:
         return type(int(theString)) is int
     except TypeError:
@@ -12,7 +12,7 @@ def inIntegerUnit(theString: str) -> bool :
 
 def getSynonyms( theSyn:str) -> dict:
     retObj = {}
-    utab = UnitTables.getInstance()
+    utab = UnitTables()
     resp = {}
     resp = utab.getUnitBySynonym(theSyn)
 

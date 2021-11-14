@@ -110,7 +110,7 @@ class UnitTablesFactory:
     def getUnitByCode(self, uCode):
         retUnit = None
         if uCode:
-            retUnit = self.unitCodes[uCode]
+            retUnit = self.unitCodes_[uCode]
 
         return retUnit
 
