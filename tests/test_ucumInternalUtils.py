@@ -2,6 +2,7 @@ import ucum.ucumInternalUtils as uI
 import pytest
 
 class TestUtils:
+
     def test_isNumericString(self):
         assert uI.isNumericString("10") == True
         with pytest.raises(TypeError) as excinfo:
@@ -13,7 +14,6 @@ class TestUtils:
 
     def test_isIntegerUnit(self):
         assert uI.isIntegerUnit("10") == "10"
-        assert uI.isIntegerUnit("29476876") == "29476876"
         assert uI.isIntegerUnit() == None
         assert uI.isIntegerUnit("a10") == None
 

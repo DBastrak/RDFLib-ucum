@@ -1,14 +1,19 @@
 from ucum.unitTables import UnitTables
+import re
 
-def isNumericString(theString: str) -> bool:
+def isNumericString(theString: str = None) -> bool:
     num = "" + theString
-    return num is not None and float(num) is not None
-
-def isIntegerUnit(theString: str) -> bool :
     try:
-        return type(int(theString)) is int
+        return num is not None and float(num) is not None
     except TypeError:
         return False
+
+def isIntegerUnit(theString: str = None) -> bool :
+    pattern = '^\d+$'
+    try:
+        return re.match(pattern, theString)[0]
+    except TypeError:
+        return None
 
 def getSynonyms( theSyn:str) -> dict:
     retObj = {}
