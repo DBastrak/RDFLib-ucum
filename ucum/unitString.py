@@ -1,9 +1,9 @@
-from UCUM.unitTables import UnitTables
-from UCUM.unit import Unit
-from UCUM.prefixTables import prefixTable
-from UCUM.ucum_config import UCUM
+from ucum.unitTables import UnitTables
+from ucum.unit import Unit
+from ucum.prefixTables import prefixTable
+from ucum.ucum_config import UCUM
 
-import UCUM.ucumInternalUtils as uI
+import ucum.ucumInternalUtils as uI
 import math
 import re
 

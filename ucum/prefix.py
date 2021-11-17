@@ -1,4 +1,4 @@
-from UCUM.ucum_config import UCUM
+from ucum.ucum_config import UCUM
 
 class prefix:
 

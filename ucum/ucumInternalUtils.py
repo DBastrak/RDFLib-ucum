@@ -1,4 +1,4 @@
-from UCUM.unitTables import UnitTables
+from ucum.unitTables import UnitTables
 
 def isNumericString(theString: str) -> bool:
     num = "" + theString

@@ -1,8 +1,8 @@
-from UCUM.ucum_config import UCUM
-from UCUM.dimension import Dimension
-from UCUM.ucumFunctions import UcumFunctions
-from UCUM.unitTables import UnitTables
-from UCUM.ucumInternalUtils import *
+from ucum.ucum_config import UCUM
+from ucum.dimension import Dimension
+from ucum.ucumFunctions import UcumFunctions
+from ucum.unitTables import UnitTables
+from ucum.ucumInternalUtils import *
 import copy
 import math
 
