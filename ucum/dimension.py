@@ -12,11 +12,11 @@ class Dimension:
             raise ValueError("Dimension.setDimensionLen must be called before Dimension constructor")
         if dimSetting == None:
             self.assignZero()
-        elif type(dimSetting) is list:
+        elif isinstance(dimSetting, list):
             if len(dimSetting) != UCUM['dimLen_']:
                 raise ValueError(f"Incorrect length of list passed to Dimension, length should be {UCUM['dimLen_']} not {len(dimSetting)}")
             self.dimVec_ = []
-            for x in range(len(UCUM['dimLen_'])):
+            for x in range(UCUM['dimLen_']):
                 self.dimVec_.append(dimSetting[x])
 
         elif type(dimSetting) is int:
@@ -27,17 +27,19 @@ class Dimension:
 
 
     def setElementAt(self, indexPos: int, value:int=None):
-        if type(indexPos) is not int or indexPos < 0 or indexPos >= UCUM['dimLen_']:
+        if not isinstance(indexPos, int) or indexPos < 0 or indexPos >= UCUM['dimLen_']:
             raise ValueError(f"setElementAt() called with an invalid index position: {indexPos}")
         if not self.dimVec_:
             self.assignZero()
-        if value is None:
+        if isinstance(value, str):
+            raise TypeError(f"Value {value} is incorrect it should be a number not a string")
+        elif value is None:
             value = 1
-        self.dimvec_[indexPos] = value
+        self.dimVec_[indexPos] = value
 
 
     def getElementAt(self, indexPos: int) ->int:
-        if type(indexPos) is not int or indexPos < 0 or indexPos >= UCUM['dimLen_']:
+        if not isinstance(indexPos, int) or indexPos < 0 or indexPos >= UCUM['dimLen_']:
             raise ValueError(f"getElementAt() called with an invalid index position: {indexPos}")
         ret = None
         if self.dimVec_:
@@ -53,13 +55,13 @@ class Dimension:
     def toString(self) -> str:
         ret = None
         if self.dimVec_:
-            ret = '[' + self.dimVec_.join(',') + ']'
+            ret = '[' + ",".join([str(x) for x in self.dimVec_ ]) + ']'
         return ret
 
 
     def add(self, dim2):
-        if isinstance(not dim2, Dimension):
-            raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
+        if not isinstance(dim2, Dimension):
+            raise TypeError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
         if self.dimVec_ and dim2.dimVec_:
             for i in range(UCUM['dimLen_']):
                 self.dimVec_[i] += dim2.dimVec_[i]
@@ -67,46 +69,48 @@ class Dimension:
 
 
     def subtract(self, dim2):
-        if isinstance(not dim2, Dimension):
-            raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
+        if not isinstance(dim2, Dimension):
+            raise TypeError(f"subtract() called with an invalid parameter {type(dim2)} instead of Dimension object")
         if self.dimVec_ and dim2.dimVec_:
             for i in range(UCUM['dimLen_']):
                 self.dimVec_[i] -= dim2.dimVec_[i]
         return self
 
 
-    def minus(self):
+    def invert(self):
         if self.dimVec_:
             for i in range(UCUM['dimLen_']):
                 self.dimVec_[i] = -self.dimVec_[i]
         return self
 
 
-    def mul(self, scalar: int):
-        if type(scalar) is not int:
+    def mul(self, scalar: int): #todo check js version of function might be a mistake
+        if not isinstance(scalar, int):
             raise TypeError(f"mul() called with an invalid parameter {type(scalar)} instead of a number")
         if self.dimVec_:
             for i in range(UCUM['dimLen_']):
-                self.dimVec_ *= scalar
+                self.dimVec_[i] *= scalar
         return self
 
 
     def equals(self, dim2) -> bool:
-        if isinstance(not dim2, Dimension):
-            raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
+        if not isinstance(dim2, Dimension):
+            raise TypeError(f"equals() called with an invalid parameter {type(dim2)} instead of Dimension object")
         isEqual = True
         dimVec2 = dim2.dimVec_
         if self.dimVec_ and dim2.dimVec_:
-            for i in range(UCUM['dimLen_']) and isEqual:
+            for i in range(UCUM['dimLen_']):
                 isEqual = self.dimVec_[i] == dimVec2[i]
+                if not isEqual:
+                    break
         else:
             isEqual = self.dimVec_ is None and dimVec2 is None
         return isEqual
 
 
     def assignDim(self, dim2):
-        if isinstance(not dim2, Dimension):
-            raise ValueError(f"add() called with an invalid parameter {type(dim2)} instead of Dimension object")
+        if not isinstance(dim2, Dimension):
+            raise TypeError(f"assignDim() called with an invalid parameter {type(dim2)} instead of Dimension object")
         if dim2.dimVec_ is None:
             self.dimVec_ = None
         else:
@@ -120,16 +124,18 @@ class Dimension:
     def assignZero(self):
         if self.dimVec_ is None:
             self.dimVec_ = []
-        for i in range(UCUM['dimLen_']):
-            self.dimVec_.append(0)
+            for i in range(UCUM['dimLen_']):
+                self.dimVec_.append(0)
         return self
 
 
-    def isZero(self) -> bool:
+    def isZero(self) -> bool: #todo check js version of function might be a mistake
         allZero = self.dimVec_ != None
         if self.dimVec_:
-            for i in range(UCUM['dimLen_']) and allZero:
+            for i in range(UCUM['dimLen_']):
                 allZero = self.dimVec_[i] == 0
+                if not allZero:
+                    break
         return allZero
 
 
@@ -141,3 +147,4 @@ class Dimension:
         that = Dimension()
         that.assignDim(self)
         return that
+
