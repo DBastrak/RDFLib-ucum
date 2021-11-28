@@ -2,7 +2,7 @@
 
 
 
-class PreFixTablesFactory:
+class PrefixTablesFactory:
 
     def __init__(self):
         self.byCode_ = {}
@@ -16,7 +16,7 @@ class PreFixTablesFactory:
 
         for key in self.byValue_:
             pfx = self.getPrefixByValue(key)
-            prefixBuff += pfx.code_ + ',' + pfx.name_ + ',,' + pfx.value_ + '\r\n'
+            prefixBuff += pfx.code_ + ',' + pfx.name_ + ',,' + f"{pfx.value_}" + '\r\n'
         return prefixBuff
 
     def allPrefixesByCode(self) -> list:
@@ -36,12 +36,20 @@ class PreFixTablesFactory:
             return False
 
     def getPrefixByCode(self,code):
-        return self.byCode_[code]
+        try:
+            return self.byCode_[code]
+        except KeyError:
+            print("This code doesn't exist")
+            return None
 
     def getPrefixByValue(self, value):
-        return self.byValue_[value]
+        try:
+            return self.byValue_[value]
+        except KeyError:
+            print("This value doesn't exist")
+            return None
 
-prefixTablesInstance = PreFixTablesFactory()
+prefixTablesInstance = PrefixTablesFactory()
 
 def prefixTable():
     return prefixTablesInstance
