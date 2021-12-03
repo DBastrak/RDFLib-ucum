@@ -55,9 +55,8 @@ class TestPrefix():
     def test_equals(self):
         dictionary = {'code_': "001", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
         instance = prefix(dictionary)
-        dictionary2 = {'code_': "001", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
-        instance2 = prefix(dictionary2)
-        dictionary3 = {'code_': "111", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
+        instance2 = prefix(dictionary)
+        dictionary2 = {'code_': "111", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
         instance3 = prefix(dictionary2)
         assert instance.equals(instance2) == True
         assert instance.equals(instance3) == False
