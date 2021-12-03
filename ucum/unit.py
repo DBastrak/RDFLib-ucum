@@ -9,7 +9,7 @@ import math
 class Unit:
 
     def __init__(self, attrs: dict):
-        self.isBase_ = attrs['isBase+']
+        self.isBase_ = attrs['isBase_']
 
         try:
             self.name_ = attrs['name_']

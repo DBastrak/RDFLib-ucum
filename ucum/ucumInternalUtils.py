@@ -18,7 +18,6 @@ def isIntegerUnit(theString: str = None) -> bool :
 def getSynonyms( theSyn:str) -> dict:
     retObj = {}
     utab = UnitTables()
-    resp = {}
     resp = utab.getUnitBySynonym(theSyn)
 
     if not resp['units']:

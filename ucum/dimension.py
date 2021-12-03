@@ -84,7 +84,7 @@ class Dimension:
         return self
 
 
-    def mul(self, scalar: int): #todo check js version of function might be a mistake
+    def mul(self, scalar: int):
         if not isinstance(scalar, int):
             raise TypeError(f"mul() called with an invalid parameter {type(scalar)} instead of a number")
         if self.dimVec_:
@@ -129,7 +129,7 @@ class Dimension:
         return self
 
 
-    def isZero(self) -> bool: #todo check js version of function might be a mistake
+    def isZero(self) -> bool: 
         allZero = self.dimVec_ != None
         if self.dimVec_:
             for i in range(UCUM['dimLen_']):

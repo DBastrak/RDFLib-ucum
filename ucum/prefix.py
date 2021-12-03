@@ -12,7 +12,7 @@ class prefix:
     def __init__(self, attrs: dict):
         try:
             if attrs['code_'] == None or attrs['ciCode_'] == None or attrs['name_'] == None or \
-                   attrs['value_'] == None or attrs['exp_'] == None:
+                   attrs['value_'] == None:
                 raise ValueError("Prefix constructor called missing one or more parameters. "
                                 "Prefix codes ci, name, value and exponent must all be specified "
                                 "and all but the exponent must not be null.")

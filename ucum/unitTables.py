@@ -33,9 +33,11 @@ class UnitTablesFactory:
         uName = theUnit['name_']
 
         if uName:
-            if self.unitNames_[uName]:
-                self.unitNames_[uName].append(theUnit)
-            else:
+            try:
+                if self.unitNames_[uName]:
+                    tempList = [self.unitNames_[uName]].append(theUnit)
+                    self.unitNames_[uName] = tempList
+            except KeyError:
                 self.unitNames_[uName] = theUnit
         else:
             raise ValueError(f"UnitTables.addUnitName called for a unit with no name. Unit code = {theUnit['csCode_']}.")
@@ -44,17 +46,19 @@ class UnitTablesFactory:
         uCode = theUnit['csCode_']
 
         if uCode:
-            if self.unitCodes_[uCode]:
-                raise Exception(f"UnitTables.addUnitCode called, already contains entry for unit with code = {uCode}")
-            else:
+            try:
+                if self.unitCodes_[uCode]:
+                    raise Exception(f"UnitTables.addUnitCode called, already contains entry for unit with code = {uCode}")
+            except KeyError:
                 self.unitCodes_[uCode] = theUnit
                 self.codeOrder_.append(uCode)
 
                 if uCode == 'g':
                     dimVec = theUnit['dim_']['dimVec_']
                     d = 0
-                    for d in range(len(dimVec)) and dimVec[d] < 1:
-                        pass
+                    for d in range(len(dimVec)):
+                        if dimVec[d] >= 1:
+                            break
                     self.massDimIndex_ = d
         else:
             raise ValueError(f"UnitTables.addUnitCode called for unit that has no code.")
@@ -64,9 +68,11 @@ class UnitTablesFactory:
 
         if uString:
             uEntry ={'mag': theUnit['baseFactorStr_'], 'unit': theUnit}
-            if self.unitStrings_[uString]:
-                self.unitStrings_[uString].append(uEntry)
-            else:
+            try:
+                if self.unitStrings_[uString]:
+                    tempList = [self.unitStrings_[uString]].append(uEntry)
+                    self.unitStrings_[uString] = tempList
+            except KeyError:
                 self.unitStrings_[uString] = uEntry
 
     def addUnitDimension(self, theUnit):
