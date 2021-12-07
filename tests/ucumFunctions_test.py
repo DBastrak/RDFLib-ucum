@@ -1,13 +1,30 @@
-import unittest
+import pytest
+from ucum.ucumFunctions import UcumFunctions
 
-class TestUcumFunctions(unittest.TestCase):
+class TestUcumFunctions():
 
-    def init_test(self):
-        pass
 
-    def forName_test(self):
-        pass
+    def test_forName(self):
 
-    def isDefined_test(self):
-        pass
+        instance = UcumFunctions()
+        func = instance.forName('cel')
+        assert func['cnvFrom'](5) == 278.15
+
+        assert instance.forName('celll') == False
+
+        with pytest.raises(AttributeError) as excinfo:
+            instance.forName(111)
+        assert "AttributeError" in str(excinfo)
+
+    def test_isDefined(self):
+
+        instance = UcumFunctions()
+
+        assert instance.isDefined('cel') == True
+
+        assert instance.isDefined('celll') == False
+
+        with pytest.raises(AttributeError) as excinfo:
+            instance.isDefined(111)
+        assert "AttributeError" in str(excinfo)
 

@@ -51,17 +51,18 @@ class UcumFunctions:
                              'cnvFrom': lambda x: math.pow(50000, -x)}
 
     def forName(self, fname) -> dict:
-        fname.toLower()
+        fname.lower()
         try:
             f = self.funcs[fname]
             return f
         except KeyError:
             print(f"Requested function {fname} is not defined")
+            return False
 
-    def isDefined(self, fname):
-        fname.toLower()
+    def isDefined(self, fname) -> bool:
+        fname.lower()
         try:
-            return self.funs[fname] != None
+            return self.funcs[fname] != None
         except KeyError:
             return False
 

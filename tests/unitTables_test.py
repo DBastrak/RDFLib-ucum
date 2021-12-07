@@ -1,72 +1,72 @@
 from ucum.dimension import Dimension
 
-import unittest
+import pytest
 
 
-class TestUnitTables(unittest.TestCase):
+class TestUnitTables():
 
-    def init_test(self):
+    def test_init(self):
         pass
 
-    def unitsCount_test(self):
+    def test_unitsCount(self):
         pass
 
-    def addUnit_test(self):
+    def test_addUnit(self):
         pass
 
-    def addUnitName_test(self):
+    def test_addUnitName(self):
         pass
 
-    def addUnitCode_test(self):
+    def test_addUnitCode(self):
         pass
 
-    def addUnitString_test(self):
+    def test_addUnitString(self):
         pass
 
-    def addUnitDimension_test(self):
+    def test_addUnitDimension(self):
         pass
 
-    def buildUnitSynonyms_test(self):
+    def test_buildUnitSynonyms(self):
         pass
 
-    def addSynonymCodes_test(self):
+    def test_addSynonymCodes(self):
         pass
 
-    def getUnitByCode_test(self):
+    def test_getUnitByCode(self):
         pass
 
-    def getUnitByName_test(self):
+    def test_getUnitByName(self):
         pass
 
-    def getUnitByString_test(self):
+    def test_getUnitByString(self):
         pass
 
-    def getUnitsByDimension_test(self):
+    def test_getUnitsByDimension(self):
         pass
 
-    def getUnitBySynonym_test(self):
+    def test_getUnitBySynonym(self):
         pass
 
-    def getAllUnitNames_test(self):
+    def test_getAllUnitNames(self):
         pass
 
-    def getMassDimensionsIndex_test(self):
+    def test_getMassDimensionsIndex(self):
         pass
 
-    def compareCode_test(self):
+    def test_compareCode(self):
         pass
 
-    def getAllUnitCodes_test(self):
+    def test_getAllUnitCodes(self):
         pass
 
-    def allUnitsByDef_test(self):
+    def test_allUnitsByDef(self):
         pass
 
-    def allUnitsByName_test(self):
+    def test_allUnitsByName(self):
         pass
 
-    def printUnits_test(self):
+    def test_printUnits(self):
         pass
 
-    def UnitTables_test(self):
+    def test_UnitTables(self):
         pass

@@ -13,7 +13,7 @@ class ucumXMLDocument:
 
         with open(r"G:\PythonProjects\RDFLib-ucum\data\ucum-essence.xml", 'r') as xmlFile:
             data = xmlFile.read()
-        self.bs_data = bs(data)
+        self.bs_data = bs(data, 'lxml')
         self.moleCodes_ = ['mol', 'eq', 'osm', 'kat', 'U']
 
 
@@ -39,7 +39,7 @@ class ucumXMLDocument:
             attrs["value_"] = None
             attrs["exp_"] = pValNode.find("sup").text
             if attrs["exp_"] != None:
-                attrs["value_"] = math.pow(10, attrs["exp_"])
+                attrs["value_"] = math.pow(10, float(attrs["exp_"]))
             else:
                 attrs["value_"] = pValNode.get("value")
                 attrs["exp_"] = None
@@ -53,7 +53,7 @@ class ucumXMLDocument:
 
     def parseBaseUnits(self, baseUnit):
 
-        for b in range(len(baseUnit)):
+        for b in baseUnit:
             attrs = {}
             attrs['isBase_'] = True
             attrs['name_'] = baseUnit[b].find("name").text
@@ -92,7 +92,7 @@ class ucumXMLDocument:
             if unitStrings[a].find("printsymbol").text:
                 sym = unitStrings[a].find("printsymbol")
                 symVal = unitStrings[a].find("printsymbol").text
-                symVal = symVal.replace(/\n/g, "") #todo add regex
+                #symVal = symVal.replace(/\n/g, "") #todo add regex
                 symVal = symVal.strip()
                 symI = sym.find('i')
 
