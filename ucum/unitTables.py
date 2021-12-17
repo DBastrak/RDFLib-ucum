@@ -12,10 +12,10 @@ class UnitTablesFactory:
         self.massDimIndex_ = 0
 
     def unitsCount(self):
-        return len(self.unitCodes_.keys())
+        return len(self.unitCodes_)
 
     def addUnit(self, theUnit):
-        uName = theUnit['name_']
+        uName = theUnit.name_
 
         if uName:
             self.addUnitName(theUnit)
@@ -24,13 +24,13 @@ class UnitTablesFactory:
         self.addUnitString(theUnit)
 
         try:
-            if theUnit['dim_']['dimVec_']:
+            if theUnit.dim_.dimVec_:
                 self.addUnitDimension(theUnit)
         except:
             pass
 
-    def addUnitName(self, theUnit):
-        uName = theUnit['name_']
+    def addUnitName(self, theUnit): #todo rework function
+        uName = theUnit.name_
 
         if uName:
             try:
@@ -40,10 +40,10 @@ class UnitTablesFactory:
             except KeyError:
                 self.unitNames_[uName] = theUnit
         else:
-            raise ValueError(f"UnitTables.addUnitName called for a unit with no name. Unit code = {theUnit['csCode_']}.")
+            raise ValueError(f"UnitTables.addUnitName called for a unit with no name. Unit code = {theUnit.csCode_}.")
 
     def addUnitCode(self, theUnit):
-        uCode = theUnit['csCode_']
+        uCode = theUnit.csCode_
 
         if uCode:
             try:
@@ -54,7 +54,7 @@ class UnitTablesFactory:
                 self.codeOrder_.append(uCode)
 
                 if uCode == 'g':
-                    dimVec = theUnit['dim_']['dimVec_']
+                    dimVec = theUnit.dim_.dimVec_
                     d = 0
                     for d in range(len(dimVec)):
                         if dimVec[d] >= 1:
@@ -64,10 +64,10 @@ class UnitTablesFactory:
             raise ValueError(f"UnitTables.addUnitCode called for unit that has no code.")
 
     def addUnitString(self, theUnit):
-        uString = theUnit['csUnitString_']
+        uString = theUnit.csUnitString_
 
         if uString:
-            uEntry ={'mag': theUnit['baseFactorStr_'], 'unit': theUnit}
+            uEntry = {'mag': theUnit.baseFactorStr_, 'unit': theUnit}
             try:
                 if self.unitStrings_[uString]:
                     tempList = [self.unitStrings_[uString]].append(uEntry)
@@ -75,8 +75,8 @@ class UnitTablesFactory:
             except KeyError:
                 self.unitStrings_[uString] = uEntry
 
-    def addUnitDimension(self, theUnit):
-        uDim = theUnit['dim_']['dimVec_']
+    def addUnitDimension(self, theUnit):  #todo rework since it is trying to make a key with a list
+        uDim = theUnit.dim_.dimVec_
 
         if uDim:
             if self.unitDimensions_[uDim]:
@@ -84,7 +84,7 @@ class UnitTablesFactory:
             else:
                 self.unitDimensions_[uDim] = theUnit
         else:
-            raise ValueError(f"UnitTables.addUnitDimension called for a unit with no dimension. Unit code = {theUnit['csCode_']}.")
+            raise ValueError(f"UnitTables.addUnitDimension called for a unit with no dimension. Unit code = {theUnit.csCode_}.")
 
     def buildUnitSynonyms(self):
 
@@ -113,14 +113,14 @@ class UnitTablesFactory:
             else:
                 self.unitSynonyms_[word] = theCode
 
-    def getUnitByCode(self, uCode):
+    def getUnitByCode(self, uCode:str):
         retUnit = None
         if uCode:
             retUnit = self.unitCodes_[uCode]
 
         return retUnit
 
-    def getUnitByName(self, uName):
+    def getUnitByName(self, uName:str):
         if uName == None:
             raise ValueError('Unable to find unit by name because no name was provided.')
 
@@ -142,7 +142,7 @@ class UnitTablesFactory:
                     retUnits = None
         return retUnits
 
-    def getUnitByString(self, uString):
+    def getUnitByString(self, uString:str = None):
         retAry = None
         if uString:
             retAry = self.unitStrings_[uString]
@@ -156,7 +156,7 @@ class UnitTablesFactory:
         if uDim == None:
             raise ValueError('Unable to find unit by because no dimension vector was provided.')
 
-        unitsArray = self.unitDimnesions_[uDim]
+        unitsArray = self.unitDimensions_[uDim]
 
         if unitsArray == None:
             print(f"Unable to find unit with dimension = {uDim}")
@@ -196,7 +196,7 @@ class UnitTablesFactory:
     def getMassDimensionsIndex(self):
         return self.massDimIndex_
 
-    def compareCode(self,  a, b):
+    def compareCode(self,  a, b):#todo check js add regex check if even needed
         a = a.replace('[\[\]]', '')
         a = a.upper()
         b = b.replace('[\[\]]', '')
@@ -206,7 +206,7 @@ class UnitTablesFactory:
     def getAllUnitCodes(self):
         return self.unitCodes_.keys()
 
-    def allUnitsByDef(self):
+    def allUnitsByDef(self):#todo check if needed
         unitsList = []
         uLen = len(self.codeOrder_)
         for u in range(uLen):

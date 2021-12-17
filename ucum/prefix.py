@@ -20,6 +20,7 @@ class prefix:
             print("Prefix constructor called missing one or more parameters"
                     "Prefix codes ci, name, value and exponent must all be specified.")
 
+
         self.code_ = attrs['code_']
 
         self.ciCode_ = attrs['ciCode_']
@@ -31,8 +32,9 @@ class prefix:
         if isinstance(attrs['value_'], str):
             try:
                 self.value_ = float(attrs['value_'])
-            except ValueError:
-                print(f"ValueError value {attrs['value_']} was not a float/int and could not be converted into one")
+            except TypeError:
+                print(f"TypeError value {attrs['value_']} was not a float/int and could not be converted into one")
+
         else:
             self.value_ = attrs['value_']
 

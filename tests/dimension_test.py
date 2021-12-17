@@ -62,12 +62,6 @@ class TestDimension():
 
         assert testInstance.getElementAt(5) == 6
 
-
-
-    def test_getProperty(self): #todo write test later need to relook at the functions use
-        pass
-
-
     def test_toString(self):
         testInstance = Dimension([1,2,3,4,5,6,7])
 

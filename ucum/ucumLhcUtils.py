@@ -11,14 +11,14 @@ class ucumLhcUtils:
             loadJson()
         self.uStrParser_ = UnitStringInstance()
 
-    def useBraceMsgForEachString(self, use:bool == None):
+    def useBraceMsgForEachString(self, use:bool = None):
         if use == None:
             use = True
         self.uStrParser_.useBraceMsgForEachString(use)
 
-    def validateUnitStrin(self, uStr, suggest:bool = False, valConv: str = 'validate') ->dict:
+    def validateUnitString(self, uStr, suggest:bool = False, valConv: str = 'validate') ->dict:
 
-        resp = self.getSpecificUnit(uStr, valConv, suggest)
+        resp = self.getSpecifiedUnit(uStr, valConv, suggest)
         theUnit = resp['unit']
         retObj = {}
         if not theUnit:
@@ -48,7 +48,7 @@ class ucumLhcUtils:
             retObj['msg'].append('No "from" value, or an invalid "from" value, was specified.')
 
         if toUnitCode:
-            toUnitCode = toUnitCode.trim()
+            toUnitCode = toUnitCode.strip()
 
         if not toUnitCode or toUnitCode == '':
             retObj['status'] = 'error'
@@ -131,7 +131,7 @@ class ucumLhcUtils:
 
         return retObj
 
-    def getSpecifiedUnit(self, uName:str ,valConv:float , suggest:bool = False):
+    def getSpecifiedUnit(self, uName:str ,valConv: str , suggest:bool = False):
         retObj = {}
         retObj['retMsg'] = []
 
@@ -172,12 +172,12 @@ class ucumLhcUtils:
             dimVec = None
             fromDim = fromUnit.getProperty('dim_')
             if not fromDim:
-                retMsg.append(f"No commensurable uinits were found for {fromName}")
+                retMsg.append(f"No commensurable units were found for {fromName}")
             else:
                 try:
                     dimVec = fromDim['dimVec_']
                 except KeyError:
-                    print("Dimension does not ave requested property (dimVec_)")
+                    print("Dimension does not have requested property (dimVec_)")
                     dimVec = None
 
                 if dimVec:

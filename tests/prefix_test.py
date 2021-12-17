@@ -5,20 +5,16 @@ class TestPrefix():
 
 
     def test_init(self):
-        dictionary2 = {'code_': "001", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': 1, 'exp_': None}
-        dictionary3 = {'code_': "001", 'ciCode_': "001", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
-        dictionary4 = {'code_': "001", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': "9a", 'exp_': 1}
+        dictionary1 = {'code_': "001", 'ciCode_': "001", 'printSymbol_': "M", 'value_': 1, 'exp_': 1}
+        dictionary2 = {'code_': "001", 'ciCode_': "001", 'name_': "Meters", 'printSymbol_': "M", 'value_': "a", 'exp_': 1}
 
-        with pytest.raises(ValueError) as excinfo:
-            instance1 = prefix(dictionary2)
-        assert "Prefix constructor called missing" in str(excinfo)
 
         with pytest.raises(KeyError) as excinfo:
-            instance2 = prefix(dictionary3)
+            instance1 = prefix(dictionary1)
         assert "KeyError" in str(excinfo)
 
         with pytest.raises(ValueError) as excinfo:
-            instance3 = prefix(dictionary4)
+            instance2 = prefix(dictionary2)
         assert "ValueError" in str(excinfo)
 
 

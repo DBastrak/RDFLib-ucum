@@ -47,11 +47,6 @@ class Dimension:
         return  ret
 
 
-    def getProperty(self, propertyName:str) -> str:
-        uProp = propertyName if propertyName[-1] == '_' else propertyName + '_'
-        return eval(f"self.{uProp}")
-
-
     def toString(self) -> str:
         ret = None
         if self.dimVec_:

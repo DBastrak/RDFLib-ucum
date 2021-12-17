@@ -32,13 +32,13 @@ class UnitString:
         self.suggestions_ = []
 
 
-    def useBraceMsgForEachString(self, use:bool = None):
-        if use == None:
+    def useBraceMsgForEachString(self, use:bool):
+        if use == True:
             self.braceMsg_ = UCUM["bracesMsg_"]
         else:
             self.braceMsg_ = ''
 
-    def parseString(self, uStr: str = None, valConv: str = "validate", suggest: bool = False):
+    def parseString(self, uStr: str = None, valConv: str = "validate", suggest: bool = False) -> dict:
         uStr.strip()
         if uStr == None or uStr == '':
             raise ValueError("Please specify a unit expression to be validated.")
@@ -137,7 +137,7 @@ class UnitString:
 
         return [finalUnit, origString]
 
-    def _getAnnotations(self, uString):
+    def _getAnnotations(self, uString) -> str:
         openBrace = uString.find("{")
         while (openBrace >= 0):
             closeBrace = uString.find("}")
@@ -706,5 +706,5 @@ class UnitString:
         return ret
 
 def UnitStringInstance():
-    return UnitString
+    return UnitString()
 

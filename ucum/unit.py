@@ -156,11 +156,11 @@ class Unit:
         self.cnvPfx_ = 1
         return self
 
-    def assignVals(self, vals: list):
+    def assignVals(self, vals: dict):
         for key in vals:
-            uKey = key+'-' if key[-1] != '-' else key
+            uKey = key + '-' if key[-1] != '-' else key
             if eval(f'self.{uKey}'):
-                self[uKey] = vals[key]
+                eval(f'self.{uKey} = vals[{key}]')
             else:
                 raise KeyError(f'{key} is not a property of a Unit')
 
@@ -169,7 +169,59 @@ class Unit:
         return retUnit
 
     def assign(self, unit2):
-        self = copy.deepcopy(unit2)
+
+        self.isBase_ = unit2.isBase_
+
+        self.name_ = unit2.name_
+
+        self.csCode_ = unit2.csCode_
+
+        self.ciCode_ = unit2.ciCode_
+
+        self.property_ = unit2.property_
+
+        self.magnitude_ = 1
+
+        self.dim_ = unit2.dim_
+
+        self.printSymbol_ = unit2.printSymbol_
+
+        self.class_ = unit2.class_
+
+        self.isMetric_ = unit2.isMetric_
+
+        self.variable_ = unit2.variable_
+
+        self.cnv_ = unit2.cnv_
+
+        self.cnvPfx_ = unit2.cnvPfx_
+
+        self.isSpecial_ = unit2.isSpecial_
+
+        self.isArbitrary_ = unit2.isArbitrary_
+
+        self.moleExp_ = unit2.moleExp_
+
+        self.synonyms_ = unit2.synonyms_
+
+        self.source_ = unit2.source_
+
+        self.loincProperty_ = unit2.loincProperty_
+
+        self.category_ = unit2.category_
+
+        self.guidance_ = unit2.guidance_
+
+        self.csUnitString_ = unit2.csUnitString_
+
+        self.ciUnitString_ = unit2.ciUnitString_
+
+        self.baseFactorStr_ = unit2.baseFactorStr_
+
+        self.baseFactor_ = unit2.baseFactor_
+
+        self.defError_ = unit2.defError_
+
 
     def equals(self,unit2) -> bool:
         return( self.magnitude_ == unit2.magnitude_ and self.cnv_ == unit2.cnv_ and self.cnvPfx_ == unit2.cnvPfx_ and
@@ -181,7 +233,9 @@ class Unit:
         keyLen = len(thisAttr)
         match = (keyLen == len(u2Attr))
         k = 0
-        for k in range(keyLen) and match:
+        for k in range(keyLen):
+            if not match:
+                break
             if thisAttr[k] == u2Attr[k]:
                 if thisAttr[k] == 'dim_':
                     match = self.dim_ == unit2.dim_
@@ -191,7 +245,7 @@ class Unit:
                 match = False
         return match
 
-    def getProperty(self, propertyName:str = None) -> str:
+    def getProperty(self, propertyName:str = None) -> str: #find all instances of get property and change them
         uProp = propertyName + '-' if propertyName[-1] != '-' else propertyName
         return eval(f"self.{uProp}")
 
@@ -234,14 +288,14 @@ class Unit:
                 toFunc = funcs.forName(self.cnv_)
                 newNum = toFunc['cnvTo'](x/ self.magnitude_)/self.cnvPfx_
             else:
-                newNum = x/ self.magnitude_
+                newNum = x / self.magnitude_
         return newNum
 
     def convertTo(self, num, toUnit):
         return toUnit.convertFrom(num, self)
 
-    def convertCoherent(self, num) -> float: #todo come back to this function
-        if self.cnv_ == None:
+    def convertCoherent(self, num) -> float:
+        if self.cnv_ != None:
             num = (num / self.cnvPfx_) * self.magnitude_
         return num
 
@@ -253,13 +307,13 @@ class Unit:
         self.name_ = ""
 
 
-        for i in range(7): #todo (max = Dimension.getMax() not sure how to translate this into python)
+        for i in range(self.dim_.dimVec_.index(1)):
             elem = self.dim_.getElementAt(i)
             tabs = UnitTables()
             uA = tabs.getUnitsByDimension(Dimension(i))
             if uA == None:
                 raise(f"Can't find base unit for dimensions {i}")
-            self.name_ = uA.name + elem #todo not sure how this works
+            self.name_ = uA.name_ + elem
 
         return num
 
@@ -397,8 +451,7 @@ class Unit:
             raise (f"Attempt to invert a non-ratio unit {self.name_}")
         self.name_ = self.invertString(self.name_)
         self.magnitude_ = 1/self.magnitude_
-        self.dim_.minus()
-        return self
+        self.dim_.invert()
 
     def invertString(self, theString):
         if len(theString) > 0:
@@ -450,7 +503,6 @@ class Unit:
         if self.dim_:
             self.dim_.mul(p)
 
-        return self
 
     def isMoleMassCommensurable(self, unit2):
         tabs = UnitTables()
