@@ -4,7 +4,7 @@ from ucum.unitTables import unitTablesInstance
 from ucum.prefixTables import prefixTablesInstance
 
 class Test_ucumXmlDocument:
-
+    """
     def test_ParseXML(self):
         instance = ucumXMLDocument()
         list = instance.parseXML()
@@ -54,3 +54,4 @@ class Test_ucumXmlDocument:
         instance.parseBaseUnits(base)
 
         assert unitTablesInstance.unitCodes_ != None
+    """

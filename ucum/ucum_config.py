@@ -22,7 +22,7 @@ UCUM = {
     #The string used to separate a unit code and unit name when they
     #are displayed together
 
-    "codeSep_ ": ': ',
+    "codeSep_": ': ',
 
     #Message text variations for validation methods and conversion methods
     

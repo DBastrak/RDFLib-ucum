@@ -15,7 +15,7 @@ class UnitTablesFactory:
         return len(self.unitCodes_)
 
     def addUnit(self, theUnit):
-        uName = theUnit.name_
+        uName = theUnit["name_"]
 
         if uName:
             self.addUnitName(theUnit)
@@ -30,7 +30,7 @@ class UnitTablesFactory:
             pass
 
     def addUnitName(self, theUnit): #todo rework function
-        uName = theUnit.name_
+        uName = theUnit["name_"]
 
         if uName:
             try:
@@ -43,18 +43,18 @@ class UnitTablesFactory:
             raise ValueError(f"UnitTables.addUnitName called for a unit with no name. Unit code = {theUnit.csCode_}.")
 
     def addUnitCode(self, theUnit):
-        uCode = theUnit.csCode_
+        uCode = theUnit["csCode_"]
 
         if uCode:
-            try:
-                if self.unitCodes_[uCode]:
-                    raise Exception(f"UnitTables.addUnitCode called, already contains entry for unit with code = {uCode}")
-            except KeyError:
+
+            if uCode in self.unitCodes_:
+                raise Exception(f"UnitTables.addUnitCode called, already contains entry for unit with code = {uCode}")
+            else:
                 self.unitCodes_[uCode] = theUnit
                 self.codeOrder_.append(uCode)
 
                 if uCode == 'g':
-                    dimVec = theUnit.dim_.dimVec_
+                    dimVec = theUnit["dim_"]["dimVec_"]
                     d = 0
                     for d in range(len(dimVec)):
                         if dimVec[d] >= 1:
@@ -64,10 +64,10 @@ class UnitTablesFactory:
             raise ValueError(f"UnitTables.addUnitCode called for unit that has no code.")
 
     def addUnitString(self, theUnit):
-        uString = theUnit.csUnitString_
+        uString = theUnit["csUnitString_"]
 
         if uString:
-            uEntry = {'mag': theUnit.baseFactorStr_, 'unit': theUnit}
+            uEntry = {'mag': theUnit["baseFactorStr_"], 'unit': theUnit}
             try:
                 if self.unitStrings_[uString]:
                     tempList = [self.unitStrings_[uString]].append(uEntry)
@@ -76,7 +76,7 @@ class UnitTablesFactory:
                 self.unitStrings_[uString] = uEntry
 
     def addUnitDimension(self, theUnit):  #todo rework since it is trying to make a key with a list
-        uDim = theUnit.dim_.dimVec_
+        uDim = theUnit["dim_"]["dimVec_"]
 
         if uDim:
             if self.unitDimensions_[uDim]:
@@ -129,7 +129,7 @@ class UnitTablesFactory:
         if sepPos >= 1:
             uCode = uName[sepPos+len(UCUM['codeSep_'])]
             uName = uName[0, sepPos]
-        retUnits = self.unitNames[uName]
+        retUnits = self.unitNames_[uName]
         if retUnits:
             uLen = len(retUnits)
             if uCode and uLen > 1:

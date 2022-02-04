@@ -2,6 +2,9 @@ import pytest
 from ucum.ucumLhcUtils import ucumLhcUtils
 from ucum.unitTables import unitTablesInstance
 from ucum.ucum_config import UCUM
+from ucum.ucumJsonDefs import loadJson
+
+loadJson()
 
 class Test_ucumLhcUtils:
 

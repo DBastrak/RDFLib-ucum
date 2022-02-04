@@ -19,8 +19,9 @@ def getSynonyms( theSyn:str) -> dict:
     retObj = {}
     utab = UnitTables()
     resp = utab.getUnitBySynonym(theSyn)
+    print(resp)
 
-    if not resp['units']:
+    if "units" not in resp:
         retObj['status'] = resp['status']
         retObj['msg]'] = resp['msg']
     else:
@@ -29,8 +30,8 @@ def getSynonyms( theSyn:str) -> dict:
         for a in range(len(resp['units'])):
             theUnit = resp['units'][a]
             retObj['units'][a] = {
-                'code':theUnit.csCode_,
-                'name':theUnit.name_,
-                'guidance':theUnit.guidance_
+                'code':theUnit["csCode_"],
+                'name':theUnit["name_"],
+                'guidance':theUnit["guidance_"]
             }
     return retObj

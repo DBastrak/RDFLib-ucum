@@ -3,6 +3,7 @@ from ucum.unitTables import unitTablesInstance
 from ucum.unitString import UnitStringInstance
 from ucum.ucumInternalUtils import *
 from ucum.ucumJsonDefs import loadJson
+from ucum.unit import Unit
 
 class ucumLhcUtils:
 
@@ -27,7 +28,7 @@ class ucumLhcUtils:
 
         else:
             retObj = {'status': 'valid' if resp['origString'] == uStr else 'invalid', 'ucumCode': resp['origString'],
-                      'unit' : {'code': theUnit.csCode_, 'name_': theUnit.name_, 'guidance': theUnit.guidance_}}
+                      'unit' : {'code': theUnit["csCode_"], 'name_': theUnit["name_"], 'guidance': theUnit["guidance_"]}}
 
         try:
             retObj['suggestions'] = resp['suggestions']
@@ -37,7 +38,7 @@ class ucumLhcUtils:
         retObj['msg'] = resp['retMsg']
         return retObj
 
-    def convertUnitTo(self, fromVal, toUnitCode:str = '', fromUnitCode: str = '', suggest:bool = False, molecularWeight = None)-> dict:
+    def convertUnitTo(self, fromVal, toUnitCode:str = '', fromUnitCode: str = '', suggest:bool = False, molecularWeight = False)-> dict:
         retObj = {'status': 'failed', 'toVal': None, 'msg' : []}
 
         if fromUnitCode:
@@ -56,14 +57,14 @@ class ucumLhcUtils:
 
         if retObj['status'] != 'error':
             try:
-                fromUnit = None
+                fromUnit = unitTablesInstance.getUnitByCode(fromUnitCode)
                 parseResp = self.getSpecifiedUnit(fromUnitCode, 'convert', suggest)
-                fromUnit = parseResp['unit']
+                #fromUnit = parseResp['unit']
 
-                if parseResp['retMsg']:
+                if 'retMsg' in parseResp:
                     retObj['msg'] = retObj['msg'].append(parseResp['retMsg'])
 
-                if parseResp['suggestions']:
+                if 'suggestions' in parseResp:
                     retObj['suggestions'] = {}
                     retObj['suggestions']['from'] = parseResp['suggestions']
 
@@ -71,12 +72,12 @@ class ucumLhcUtils:
                     retObj['msg'].append(f"Unable to find a unit for {fromUnitCode}, "
                                          f"so no conversion could be performed.")
 
-                toUnit = None
+                toUnit = unitTablesInstance.getUnitByCode(toUnitCode)
                 parseResp = self.getSpecifiedUnit(toUnitCode, 'convert', suggest)
-                toUnit = parseResp['unit']
+                #toUnit = parseResp['unit']
                 if parseResp['retMsg']:
                     retObj['msg'] = retObj['msg'].append(parseResp['retMsg'])
-                if parseResp['suggestions']:
+                if 'suggestions' in parseResp:
                     if not retObj['suggestions']:
                         retObj['suggestions'] = {}
                     retObj['suggestions']['to'] = parseResp['suggestions']
@@ -109,7 +110,7 @@ class ucumLhcUtils:
 
                     except Exception as e:
                         retObj['status'] = 'failed'
-                        retObj['msg'].append(str(e))
+                        retObj['msg'] = str(e)
 
             except Exception as e:
                 if e == UCUM.needmoleWeightMsg_:
@@ -128,7 +129,6 @@ class ucumLhcUtils:
 
         else:
             retObj = getSynonyms(theSyn)
-
         return retObj
 
     def getSpecifiedUnit(self, uName:str ,valConv: str , suggest:bool = False):
@@ -163,7 +163,7 @@ class ucumLhcUtils:
         retMsg = []
         commUnits = None
         parseResp = self.getSpecifiedUnit(fromName, 'validate', False)
-        fromUnit = parseResp['unit']
+        fromUnit = unitTablesInstance.getUnitByName(fromName)
         if len(parseResp['retMsg']) > 0:
             retMsg = parseResp['retMsg']
         if not fromUnit:

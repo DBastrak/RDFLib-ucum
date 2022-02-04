@@ -81,9 +81,9 @@ class UnitString:
                     'magnitude_': finalUnit,
                     'name_': origString
                 })
-                retObj[0] =finalUnit
-
-        retObj[2] = self.retMsg_
+                retObj[0] = finalUnit
+        print(retObj)
+        retObj.append(self.retMsg_)
         if self.suggestions_ and len(self.suggestions_) > 0:
             retObj[3] = self.suggestions_
         return retObj
@@ -170,7 +170,7 @@ class UnitString:
         while uString != "" and not stopProcessing:
             openCt =  0
             closeCt = 0
-            openPos = uString.find('(')
+            openPos = int(uString.find('('))
 
             if openPos < 0:
                 closePos = uString.find(')')
@@ -191,7 +191,9 @@ class UnitString:
 
                     closePos = 0
                     c = openPos + 1
-                    for c in range(uLen) and openCt != closeCt:
+                    for c in range(uLen):
+                        if openCt == closeCt:
+                            break
                         if uString[c] == '(':
                             openCt += 1
                         elif uString[c] == ')':
@@ -212,13 +214,13 @@ class UnitString:
                     else:
                         uStrArray.append(origString[openPos])
                         self.retMsg_.append(f"Missing close parenthesis for open parenthesis at "
-                                            f"{origString.substring(0, openPos + trimmedCt)}"
-                                            f"{self.openEmph_}${origString[openPos, 1]}"
-                                            f"{self.closeEmph_}${origString[openPos + 1]}")
+                                            f"{origString[0: openPos + trimmedCt]}"
+                                            f"{self.openEmph_}{origString[openPos: 1]}"
+                                            f"{self.closeEmph_}{origString[openPos + 1]}")
                         stopProcessing = True
         if stopProcessing:
             self.parensUnits_ = []
-        return [uStrArray.join(''), origString, stopProcessing]
+        return [''.join(uStrArray), origString, stopProcessing]
 
     def _makeUnitsArray(self, uStr:str, origString:str) -> list:
 
@@ -420,8 +422,8 @@ class UnitString:
         if asIdx != 0:
             pStr = pStr[asIdx]
 
-        aeIdx = pStr[pStr.find(self.braceFlag_,):]
-        endText = pStr[aeIdx + self.bFlagLen_:] if (aeIdx+self.bFlagLen_) < len(pStr) else None
+        aeIdx = pStr[pStr.find(self.braceFlag_):]
+        endText = f"{aeIdx}{self.bFlagLen_}" if len(f"{aeIdx}{self.bFlagLen_}") < len(pStr) else None
 
         idx = pStr[self.bFlagLen_, aeIdx]
         try:
