@@ -26,21 +26,33 @@ class Test_ucumLhcUtils:
         assert ret["status"] == "valid"
 
     def test_convertUnitTo(self):
+        loadJson()
+        unitTablesInstance.buildUnitSynonyms()
         instance = ucumLhcUtils()
         ret = instance.convertUnitTo(1, "cm", "m")
-        assert ret["status"] == 'succeeded'
+        assert ret["toVal"] == 100
+        ret = instance.convertUnitTo(1, "g", "kg")
+        assert ret["toVal"] == 1000
+
 
     def test_checkSynonyms(self):
+        loadJson()
+        unitTablesInstance.buildUnitSynonyms()
         instance = ucumLhcUtils()
         ret = instance.checkSynonyms("m")
         assert ret['status'] != 'error'
 
     def test_getSpecifiedUnit(self):
+        loadJson()
+        unitTablesInstance.buildUnitSynonyms()
         instance = ucumLhcUtils()
         ret = instance.checkSynonyms("m")
-        assert 'error' not in ret["retMsg"][0]
+        assert 'error' not in ret['status']
 
     def test_commensurablesList(self):
+        loadJson()
+        unit = unitTablesInstance.getUnitByName("meter")
+        unitTablesInstance.addUnitDimension(unit)
         instance = ucumLhcUtils()
-        retList = instance.commensurablesList("m")
+        retList = instance.commensurablesList("meter")
         assert retList[0] != None

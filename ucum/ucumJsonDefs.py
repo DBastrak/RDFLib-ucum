@@ -43,3 +43,4 @@ def loadJson():
 
 if __name__ == "__main__":
     loadJson()
+    print(unitTablesInstance.unitCodes_)

@@ -58,6 +58,7 @@ class ucumLhcUtils:
         if retObj['status'] != 'error':
             try:
                 fromUnit = unitTablesInstance.getUnitByCode(fromUnitCode)
+                fromUnit = Unit(fromUnit)
                 parseResp = self.getSpecifiedUnit(fromUnitCode, 'convert', suggest)
                 #fromUnit = parseResp['unit']
 
@@ -73,6 +74,7 @@ class ucumLhcUtils:
                                          f"so no conversion could be performed.")
 
                 toUnit = unitTablesInstance.getUnitByCode(toUnitCode)
+                toUnit = Unit(toUnit)
                 parseResp = self.getSpecifiedUnit(toUnitCode, 'convert', suggest)
                 #toUnit = parseResp['unit']
                 if parseResp['retMsg']:
@@ -85,7 +87,7 @@ class ucumLhcUtils:
                 if fromUnit and toUnit:
                     try:
                         if not molecularWeight:
-                            retObj['toVal'] = toUnit.convertFrom(fromVal, fromUnit)
+                            retObj['toVal'] = toUnit.convertTo(fromVal, fromUnit)
                         else:
 
                             if fromUnit.moleExp_ != 0 and toUnit.moleExp_ != 0:
@@ -129,6 +131,7 @@ class ucumLhcUtils:
 
         else:
             retObj = getSynonyms(theSyn)
+        print(retObj)
         return retObj
 
     def getSpecifiedUnit(self, uName:str ,valConv: str , suggest:bool = False):
@@ -159,10 +162,38 @@ class ucumLhcUtils:
                     retObj['retMsg'].insert(0, f"{uName} is not a valid unit. {str(e)}")
         return retObj
 
+    def getSpecifiedUnitByName(self, uName:str ,valConv: str , suggest:bool = False):
+        retObj = {}
+        retObj['retMsg'] = []
+
+        if not uName:
+            retObj['retMsg'].append("No unit string specified.")
+        else:
+            utab = unitTablesInstance
+            uName = uName.strip()
+
+            theUnit = utab.getUnitByName(uName)
+
+            if theUnit:
+                retObj['unit'] = theUnit
+                retObj['origString'] = uName
+            else:
+                try:
+                    resp = self.uStrParser_.parseString(uName, valConv, suggest)
+                    retObj['unit'] = resp[0]
+                    retObj['origString'] = resp[1]
+                    if resp[2]:
+                        retObj['retMsg'] = resp[2]
+                    retObj['suggestions'] = resp[3]
+                except Exception as e:
+                    print(f"Unit requested fro unit string {uName}. request unsuccessful; error throw = {str(e)}")
+                    retObj['retMsg'].insert(0, f"{uName} is not a valid unit. {str(e)}")
+        return retObj
+
     def commensurablesList(self, fromName:str)->list:
         retMsg = []
         commUnits = None
-        parseResp = self.getSpecifiedUnit(fromName, 'validate', False)
+        parseResp = self.getSpecifiedUnitByName(fromName, 'validate', False)
         fromUnit = unitTablesInstance.getUnitByName(fromName)
         if len(parseResp['retMsg']) > 0:
             retMsg = parseResp['retMsg']
@@ -170,7 +201,7 @@ class ucumLhcUtils:
             retMsg.append(f"Could not find unit {fromName}")
         else:
             dimVec = None
-            fromDim = fromUnit.getProperty('dim_')
+            fromDim = fromUnit['dim_']
             if not fromDim:
                 retMsg.append(f"No commensurable units were found for {fromName}")
             else:

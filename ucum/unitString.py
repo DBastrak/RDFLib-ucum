@@ -425,7 +425,7 @@ class UnitString:
         aeIdx = pStr[pStr.find(self.braceFlag_):]
         endText = f"{aeIdx}{self.bFlagLen_}" if len(f"{aeIdx}{self.bFlagLen_}") < len(pStr) else None
 
-        idx = pStr[self.bFlagLen_, aeIdx]
+        idx = pStr[self.bFlagLen_: aeIdx]
         try:
             idxNum = float(idx)
             if idxNum >= len(self.annotations_):

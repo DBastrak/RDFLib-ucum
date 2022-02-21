@@ -24,7 +24,7 @@ class UnitTablesFactory:
         self.addUnitString(theUnit)
 
         try:
-            if theUnit.dim_.dimVec_:
+            if theUnit["dim_"]["dimVec_"]:
                 self.addUnitDimension(theUnit)
         except:
             pass
@@ -75,14 +75,17 @@ class UnitTablesFactory:
             except KeyError:
                 self.unitStrings_[uString] = uEntry
 
-    def addUnitDimension(self, theUnit):  #todo rework since it is trying to make a key with a list
+    def addUnitDimension(self, theUnit):
         uDim = theUnit["dim_"]["dimVec_"]
+        keyUDim = ""
+        for item in uDim:
+            keyUDim += str(item)
 
-        if uDim:
-            if self.unitDimensions_[uDim]:
-                self.unitDimensions_[uDim].append(theUnit)
+        if keyUDim:
+            if keyUDim in self.unitDimensions_:
+                self.unitDimensions_[keyUDim].append(theUnit)
             else:
-                self.unitDimensions_[uDim] = theUnit
+                self.unitDimensions_[keyUDim] = theUnit
         else:
             raise ValueError(f"UnitTables.addUnitDimension called for a unit with no dimension. Unit code = {theUnit.csCode_}.")
 
@@ -90,7 +93,7 @@ class UnitTablesFactory:
 
         for code in self.unitCodes_:
             theUnit = self.unitCodes_[code]
-            uSyns = theUnit.synonyms_
+            uSyns = theUnit["synonyms_"]
 
             if uSyns:
                 synsAry = uSyns.split(';')
@@ -98,7 +101,7 @@ class UnitTablesFactory:
                     for a in range(len(synsAry)):
                         theSyn =synsAry[a].strip()
                         self.addSynonymCodes(code, theSyn)
-            self.addSynonymCodes(code, theUnit.name_)
+            self.addSynonymCodes(code, theUnit["name_"])
 
     def addSynonymCodes(self, theCode, theSynonyms):
         words = theSynonyms.split(' ')
@@ -106,12 +109,12 @@ class UnitTablesFactory:
         for w in range(len(words)):
             word = words[w]
 
-            if self.unitSynonyms_[word]:
+            if word in self.unitSynonyms_:
                 synCodes = self.unitSynonyms_[word]
-                if synCodes.find(theCode) == -1:
+                if theCode not in synCodes:
                     self.unitSynonyms_[word].append(theCode)
             else:
-                self.unitSynonyms_[word] = theCode
+                self.unitSynonyms_[word] = [theCode]
 
     def getUnitByCode(self, uCode:str):
         retUnit = None
@@ -151,12 +154,14 @@ class UnitTablesFactory:
         return retAry
 
     def getUnitsByDimension(self, uDim):
+        print(self.unitDimensions_)
         unitsArray = None
-
-        if uDim == None:
+        keyUDim = ""
+        for item in uDim:
+            keyUDim += str(item)
+        if keyUDim == None:
             raise ValueError('Unable to find unit by because no dimension vector was provided.')
-
-        unitsArray = self.unitDimensions_[uDim]
+        unitsArray = self.unitDimensions_[keyUDim]
 
         if unitsArray == None:
             print(f"Unable to find unit with dimension = {uDim}")

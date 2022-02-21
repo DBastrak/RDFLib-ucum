@@ -4,6 +4,7 @@ from ucum.ucumJsonDefs import loadJson
 from ucum.unitTables import unitTablesInstance
 
 loadJson()
+unitTablesInstance.buildUnitSynonyms()
 
 class Test_unitString:
 

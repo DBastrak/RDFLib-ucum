@@ -1,7 +1,7 @@
 from ucum.ucum_config import UCUM
 from ucum.dimension import Dimension
 from ucum.ucumFunctions import UcumFunctions
-from ucum.unitTables import UnitTables
+from ucum.unitTables import unitTablesInstance
 from ucum.ucumInternalUtils import *
 import copy
 import math
@@ -158,11 +158,14 @@ class Unit:
 
     def assignVals(self, vals: dict):
         for key in vals:
-            uKey = key + '-' if key[-1] != '-' else key
-            if eval(f'self.{uKey}'):
-                eval(f'self.{uKey} = vals[{key}]')
+            uKey = key + '_' if key[-1] != '_' else key
+            if uKey in dir(self):
+                self.uKey = vals[uKey]
+                if uKey == "isBase_":
+                    print(self.uKey)
             else:
                 raise KeyError(f'{key} is not a property of a Unit')
+        print(self.isBase_)
 
     def clone(self):
         retUnit = copy.deepcopy(self)
@@ -228,61 +231,67 @@ class Unit:
                 (self.dim_ == None and unit2.dim_ == None) or self.dim_ == unit2.dim_)
 
     def fullEquals(self, unit2) -> bool:
-        thisAttr = self.keys().sort()
-        u2Attr = unit2.keys().sort()
+        thisAttr = self.__dict__
+        attr = [key for key in thisAttr]
+
+        u2Attr = unit2.__dict__
+        attr2 = [key for key in u2Attr]
+
         keyLen = len(thisAttr)
         match = (keyLen == len(u2Attr))
         k = 0
         for k in range(keyLen):
             if not match:
                 break
-            if thisAttr[k] == u2Attr[k]:
-                if thisAttr[k] == 'dim_':
-                    match = self.dim_ == unit2.dim_
+            if attr[k] == attr2[k]:
+                if attr[k] == 'dim_':
+                    match = self.dim_.dimVec_ == unit2.dim_.dimVec_
                 else:
-                    match = eval(f"self.{thisAttr[k]} == unit2.{thisAttr[k]}")
+                    match = eval(f"self.{attr[k]} == unit2.{attr[k]}")
             else:
+
                 match = False
+
         return match
 
     def getProperty(self, propertyName:str = None) -> str: #find all instances of get property and change them
         uProp = propertyName + '-' if propertyName[-1] != '-' else propertyName
         return eval(f"self.{uProp}")
 
-    def convertFrom(self, num, fromUnit):
-        newNum = 0.0
+    def convertTo(self, num, toUnit):
+
         if self.isArbitrary_:
-            raise (f"Attempt to convert arbitrary unit {self.name_}")
-        if fromUnit.isArbitrary:
-            raise(f"Attempt to convert to arbitrary unit {fromUnit.name_}")
+            raise Exception(f"Attempt to convert arbitrary unit {self.name_}")
+        if toUnit.isArbitrary_:
+            raise Exception(f"Attempt to convert to arbitrary unit {toUnit.name_}")
 
-        if fromUnit.dim_ and self.dim_ and not fromUnit.dim_ == self.dim_:
-            if self.isMoleMassCommensurable(fromUnit):
-                raise(UCUM['needMoleWeightMsg_'])
+        if toUnit.dim_ and self.dim_ and not toUnit.dim_.dimVec_ == self.dim_.dimVec_:
+            if self.isMoleMassCommensurable(toUnit):
+                raise Exception(UCUM['needMoleWeightMsg_'])
             else:
-                raise (f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
+                raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        if fromUnit.dim_ and (not self.dim_ or self.dim_ == None):
-            raise (f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
+        if toUnit.dim_ and (not self.dim_ or self.dim_ == None):
+            raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        if self.dim_ and (not fromUnit.dim_ or fromUnit.dim_ == None):
-            raise (f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
+        if self.dim_ and (not toUnit.dim_ or toUnit.dim_ == None):
+            raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        fromCnv = fromUnit.cnv_
-        fromMag = fromUnit.magnitude_
+        toCnv = toUnit.cnv_
+        toMag = toUnit.magnitude_
 
-        if fromCnv == self.cnv_:
-            newNum = (num * fromMag)/self.magnitude_
+        if toCnv == self.cnv_:
+            newNum = (num * toMag)/self.magnitude_
 
         else:
             x = 0.0
             funcs = UcumFunctions
-            if fromCnv != None:
+            if toCnv != None:
 
-                fromFunc = funcs.forName(fromCnv)
-                x = fromFunc['cnvFrom'](num * fromUnit.cnvPfx_) * fromMag
+                fromFunc = funcs.forName(toCnv)
+                x = fromFunc['cnvFrom'](num * toUnit.cnvPfx_) * toMag
             else:
-                x = num * fromMag
+                x = num * toMag
 
             if self.cnv_ != None:
                 toFunc = funcs.forName(self.cnv_)
@@ -291,28 +300,27 @@ class Unit:
                 newNum = x / self.magnitude_
         return newNum
 
-    def convertTo(self, num, toUnit):
-        return toUnit.convertFrom(num, self)
+    def convertFrom(self, num, fromUnit):
+        return fromUnit.convertTo(num, self)
 
     def convertCoherent(self, num) -> float:
         if self.cnv_ != None:
             num = (num / self.cnvPfx_) * self.magnitude_
         return num
 
-    def mutateCoherent(self, num):
-        num = self.convertFrom(num)
+    def mutateCoherent(self, num: int, fromUnit):
+        num = self.convertFrom(num, fromUnit)
         self.magnitude_ = 1
         self.cnv_ = None
         self.cnvPfx_ = 1
         self.name_ = ""
 
-
-        for i in range(self.dim_.dimVec_.index(1)):
+        for i in range(self.dim_.dimVec_.index(1, 0, len(self.dim_.dimVec_)-1)):
             elem = self.dim_.getElementAt(i)
-            tabs = UnitTables()
+            tabs = unitTablesInstance
             uA = tabs.getUnitsByDimension(Dimension(i))
             if uA == None:
-                raise(f"Can't find base unit for dimensions {i}")
+                raise Exception(f"Can't find base unit for dimensions {i}")
             self.name_ = uA.name_ + elem
 
         return num
@@ -326,15 +334,15 @@ class Unit:
         molAmt = (self.magnitude_ * amt)/molecularWeight
 
         tabs = UnitTables()
-        avoNum = (tabs.getUnitByCode('mol')).magnitude_
+        avoNum = (tabs.getUnitByCode('mol'))["magnitude_"]
         molesFactor = molUnit.magnitude_ / avoNum
 
         return molAmt/molesFactor
 
     def convertMolToMass(self, amt: float, massUnit, molecularWeight):
 
-        tabs = UnitTables()
-        avoNum = (tabs.getUnitByCode('mol')).magnitude_
+        tabs = unitTablesInstance
+        avoNum = (tabs.getUnitByCode('mol'))["magnitude_"]
         molesFactor = self.magnitude_ / avoNum
         massAmt = (molesFactor * amt) * molecularWeight
         return massAmt/massUnit.magnitude_
@@ -348,9 +356,9 @@ class Unit:
     def multiplyThis(self, s):
         retUnit = self.clone()
         if retUnit.cnv_ != None:
-            retUnit.cnvPfx_ *= s
+            retUnit.cnvPfx_ = retUnit.cnvPfx_ * s
         else:
-            retUnit.magnitude_ *= s
+            retUnit.magnitude_ = retUnit.magnitude_ * s
         mulVal = str(s)
         retUnit.name_ = f"[{mulVal}*{self.name_}]"
         retUnit.csCode_ = f"({mulVal}.{self.csCode_})"
@@ -400,16 +408,16 @@ class Unit:
 
         retUnit.moleExp_ =retUnit.moleExp_ + unit2.moleExp_
         if not(retUnit.isArbitrary_):
-            retUnit.isArbitrary_ = unit2.isArbitrary
+            retUnit.isArbitrary_ = unit2.isArbitrary_
 
         return retUnit
 
     def divide(self, unit2):
         retUnit = self.clone()
         if retUnit.cnv_ != None:
-            raise(f"Attempt to divide non-ratio unit {retUnit.name_}")
+            raise Exception(f"Attempt to divide non-ratio unit {retUnit.name_}")
         if unit2.cnv_ != None:
-            raise (f"Attempt to divide non-ratio unit {unit2.name_}")
+            raise Exception(f"Attempt to divide non-ratio unit {unit2.name_}")
 
         if retUnit.name_ and unit2.name_:
             retUnit.name_ = f"[{retUnit.name_}]/[{unit2.name_}]"
@@ -435,20 +443,20 @@ class Unit:
             if retUnit.dim_:
                 if retUnit.dim_ == None:
                     retUnit.dim_.assignZero()
-                retUnit.dim_ = unit2.dim_.sub(unit2.dim_)
+                retUnit.dim_ = unit2.dim_.subtract(unit2.dim_)
             else:
                 retUnit.dim_ = unit2.dim_.clone().minus()
 
         retUnit.moleExp_ = retUnit.moleExp_ = unit2.moleExp_
 
-        if not (retUnit.isArbitrary_):
-            retUnit.isArbitrary_ = unit2.isArbitrary
+        if not retUnit.isArbitrary_:
+            retUnit.isArbitrary_ = unit2.isArbitrary_
 
         return retUnit
 
     def invert(self):
         if self.cnv_ != None:
-            raise (f"Attempt to invert a non-ratio unit {self.name_}")
+            raise Exception(f"Attempt to invert a non-ratio unit {self.name_}")
         self.name_ = self.invertString(self.name_)
         self.magnitude_ = 1/self.magnitude_
         self.dim_.invert()
@@ -458,7 +466,7 @@ class Unit:
             stringRep = theString.replace('/', '!').replace('.', '/').replace('!','.')
             if stringRep[0] == '.':
                 theString = stringRep[1]
-            if stringRep[0] == '/':
+            elif stringRep[0] == '/':
                 theString = stringRep
             else:
                 theString = "/" + stringRep
@@ -473,31 +481,30 @@ class Unit:
 
         for i in range(arLen):
             un = len(uArray)
-            if un != '/' and un != '.':
-                try:
-                    nun = int(un)
-                    if type(nun) is int:
-                        uArray[i] = str(math.pow(nun, p))
-                except:
-                    uLen = len(un)
-                    u = uLen - 1
-                    for i in range(u, 0, -1):
-                        try:
-                            uChar = int(un[u])
-                            if type(uChar) is not int:
-                                if un[u] == '-' or un[u] == '+':
-                                    u -= 1
-                                if u < uLen -1:
-                                    exp = int(un[u])
-                                    exp = math.pow(exp, p)
-                                    uArray[i] = un[0,u] + str(exp)
-                                    u = -1
-                                else:
-                                    uArray[i] += str(p)
-                                    u = -1
-                                u =-1
-                        except:
-                            pass
+            try:
+                nun = un
+                if type(nun) is int:
+                    uArray[i] = str(math.pow(nun, p))
+            except:
+                uLen = un
+                u = uLen - 1
+                for i in range(u, 0, -1):
+                    try:
+                        uChar = int(un[u])
+                        if type(uChar) is not int:
+                            if un[u] == '-' or un[u] == '+':
+                                u -= 1
+                            if u < uLen -1:
+                                exp = int(un[u])
+                                exp = math.pow(exp, p)
+                                uArray[i] = un[0,u] + str(exp)
+                                u = -1
+                            else:
+                                uArray[i] += str(p)
+                                u = -1
+                            u =-1
+                    except:
+                        pass
         self.csCode_ = uArray.join('')
         self.magnitude_ = math.pow(self.magnitude_, p)
         if self.dim_:
