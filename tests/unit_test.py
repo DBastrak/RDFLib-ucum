@@ -94,16 +94,16 @@ class Test_unit:
         assert instance.fullEquals(instance) == True
         assert instance.fullEquals(instance2) == False
 
-    def test_convertTo(self):
-        instance = Unit(tempUnitDict)
-        instance2 = Unit(tempUnitDictCM)
-
-        assert instance2.convertTo(200 ,instance) == 2 #cm to meters 200 -> 2
-
     def test_convertFrom(self):
         instance = Unit(tempUnitDict)
         instance2 = Unit(tempUnitDictCM)
-        assert instance2.convertFrom(2, instance) == 200 #meters to cm 2 -> 200
+
+        assert instance2.convertFrom(200 ,instance) == 2 #cm to meters 200 -> 2
+
+    def test_convertTo(self):
+        instance = Unit(tempUnitDict)
+        instance2 = Unit(tempUnitDictCM)
+        assert instance2.convertTo(2, instance) == 200 #meters to cm 2 -> 200
 
     def test_convertCoherent(self):
         instance = Unit(tempUnitDict)

@@ -258,40 +258,41 @@ class Unit:
         uProp = propertyName + '-' if propertyName[-1] != '-' else propertyName
         return eval(f"self.{uProp}")
 
-    def convertTo(self, num, toUnit):
+    def convertFrom(self, num, fromUnit):
 
         if self.isArbitrary_:
             raise Exception(f"Attempt to convert arbitrary unit {self.name_}")
-        if toUnit.isArbitrary_:
-            raise Exception(f"Attempt to convert to arbitrary unit {toUnit.name_}")
+        if fromUnit.isArbitrary_:
+            raise Exception(f"Attempt to convert to arbitrary unit {fromUnit.name_}")
 
-        if toUnit.dim_ and self.dim_ and not toUnit.dim_.dimVec_ == self.dim_.dimVec_:
-            if self.isMoleMassCommensurable(toUnit):
+        if fromUnit.dim_ and self.dim_ and not fromUnit.dim_.dimVec_ == self.dim_.dimVec_:
+            if self.isMoleMassCommensurable(fromUnit):
                 raise Exception(UCUM['needMoleWeightMsg_'])
             else:
-                raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
+                raise Exception(f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        if toUnit.dim_ and (not self.dim_ or self.dim_ == None):
-            raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
+        if fromUnit.dim_ and (not self.dim_ or self.dim_ == None):
+            raise Exception(f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        if self.dim_ and (not toUnit.dim_ or toUnit.dim_ == None):
-            raise Exception(f"Sorry. {toUnit.csCode_} cannot be converted to {self.csCode_}")
+        if self.dim_ and (not fromUnit.dim_ or fromUnit.dim_ == None):
+            raise Exception(f"Sorry. {fromUnit.csCode_} cannot be converted to {self.csCode_}")
 
-        toCnv = toUnit.cnv_
-        toMag = toUnit.magnitude_
+        fromCnv = fromUnit.cnv_
+        fromMag = fromUnit.magnitude_
 
-        if toCnv == self.cnv_:
-            newNum = (num * toMag)/self.magnitude_
+        print(fromUnit.name_, fromUnit.cnv_, fromUnit.magnitude_, self.name_, self.cnv_, self.magnitude_)
+        if fromCnv == self.cnv_:
+            newNum = (num * fromMag)/self.magnitude_
 
         else:
             x = 0.0
             funcs = UcumFunctions
-            if toCnv != None:
+            if fromCnv != None:
 
-                fromFunc = funcs.forName(toCnv)
-                x = fromFunc['cnvFrom'](num * toUnit.cnvPfx_) * toMag
+                fromFunc = funcs.forName(fromCnv)
+                x = fromFunc['cnvFrom'](num * fromUnit.cnvPfx_) * fromMag
             else:
-                x = num * toMag
+                x = num * fromMag
 
             if self.cnv_ != None:
                 toFunc = funcs.forName(self.cnv_)
@@ -300,8 +301,8 @@ class Unit:
                 newNum = x / self.magnitude_
         return newNum
 
-    def convertFrom(self, num, fromUnit):
-        return fromUnit.convertTo(num, self)
+    def convertTo(self, num, fromUnit):
+        return fromUnit.convertFrom(num, self)
 
     def convertCoherent(self, num) -> float:
         if self.cnv_ != None:

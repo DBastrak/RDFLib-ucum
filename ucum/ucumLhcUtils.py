@@ -38,7 +38,7 @@ class ucumLhcUtils:
         retObj['msg'] = resp['retMsg']
         return retObj
 
-    def convertUnitTo(self, fromVal, toUnitCode:str = '', fromUnitCode: str = '', suggest:bool = False, molecularWeight = False)-> dict:
+    def convertUnitTo(self, fromVal, fromUnitCode:str = '', toUnitCode: str = '', suggest:bool = False, molecularWeight = False)-> dict:
         retObj = {'status': 'failed', 'toVal': None, 'msg' : []}
 
         if fromUnitCode:
@@ -87,7 +87,7 @@ class ucumLhcUtils:
                 if fromUnit and toUnit:
                     try:
                         if not molecularWeight:
-                            retObj['toVal'] = toUnit.convertTo(fromVal, fromUnit)
+                            retObj['toVal'] = toUnit.convertFrom(fromVal, fromUnit)
                         else:
 
                             if fromUnit.moleExp_ != 0 and toUnit.moleExp_ != 0:
@@ -115,11 +115,11 @@ class ucumLhcUtils:
                         retObj['msg'] = str(e)
 
             except Exception as e:
-                if e == UCUM.needmoleWeightMsg_:
+                if e == UCUM["needMoleWeightMsg_"]:
                     retObj['status'] = 'failed'
                 else:
                     retObj['status'] = 'error';
-                retObj['msg'].push(str(e))
+                retObj['msg'].append(str(e))
 
         return retObj
 
@@ -193,26 +193,16 @@ class ucumLhcUtils:
     def commensurablesList(self, fromName:str)->list:
         retMsg = []
         commUnits = None
-        parseResp = self.getSpecifiedUnitByName(fromName, 'validate', False)
+
         fromUnit = unitTablesInstance.getUnitByName(fromName)
-        if len(parseResp['retMsg']) > 0:
-            retMsg = parseResp['retMsg']
+
         if not fromUnit:
             retMsg.append(f"Could not find unit {fromName}")
         else:
-            dimVec = None
-            fromDim = fromUnit['dim_']
+            fromDim = fromUnit['dim_']['dimVec_']
+
             if not fromDim:
                 retMsg.append(f"No commensurable units were found for {fromName}")
-            else:
-                try:
-                    dimVec = fromDim['dimVec_']
-                except KeyError:
-                    print("Dimension does not have requested property (dimVec_)")
-                    dimVec = None
-
-                if dimVec:
-                    utab = unitTablesInstance
-                    commUnits = utab.getUnitsByDimension(dimVec)
-
+            if fromDim:
+                commUnits = unitTablesInstance.getUnitsByDimension(fromDim)
         return [commUnits, retMsg]

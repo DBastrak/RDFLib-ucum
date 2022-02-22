@@ -84,7 +84,7 @@ class TestUnitTables():
     def test_getUnitsByDimension(self):
         instance = UnitTablesFactory()
         instance.addUnit(unitDict)
-        assert instance.getUnitsByDimension([1,0,0,0,0,0,0]) == unitDict
+        assert instance.getUnitsByDimension([1,0,0,0,0,0,0]) == [unitDict]
 
     def test_getUnitBySynonym(self):
         instance = UnitTablesFactory()
